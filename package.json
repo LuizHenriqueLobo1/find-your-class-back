@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/LuizHenriqueLobo1/find-your-class-back/issues"
   },
-  "homepage": "https://github.com/LuizHenriqueLobo1/find-your-class-back#readme"
+  "homepage": "https://github.com/LuizHenriqueLobo1/find-your-class-back#readme",
+  "dependencies": {
+    "dotenv": "^16.0.2",
+    "googleapis": "^108.0.0",
+    "nodemon": "^2.0.20"
+  }
 }
