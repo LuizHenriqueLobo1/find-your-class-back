@@ -1,0 +1,20 @@
+{
+  "name": "find-your-class-back",
+  "version": "1.0.0",
+  "description": "Back-end do projeto feito para ajudar os alunos do IFBA a achar suas salas.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuizHenriqueLobo1/find-your-class-back.git"
+  },
+  "keywords": [],
+  "author": "Luiz Henrique Lobo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuizHenriqueLobo1/find-your-class-back/issues"
+  },
+  "homepage": "https://github.com/LuizHenriqueLobo1/find-your-class-back#readme"
+}
