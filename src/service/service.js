@@ -48,8 +48,8 @@ export function getFinalData(data, block) {
   const filteredRooms = [];
   rooms.forEach((room, index) => {
     filteredRooms.push({
-      nomeDaSala: room[0][1], 
-      aulas: newRooms[index]
+      roomName: room[0][1], 
+      classes: newRooms[index]
     }); 
   });
 

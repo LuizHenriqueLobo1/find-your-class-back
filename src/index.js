@@ -1,34 +1,20 @@
-import { google } from 'googleapis';
 import { config } from 'dotenv';
+import express from 'express';
 import { getFinalData } from './service/service.js';
+import { getAuthSheets } from './api/api.js';
 
 config();
 
-async function getAuthSheets() {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: './credentials.json',
-    scopes: process.env.SCOPES,
-  });
+const app = express();
+const PORT = process.env.PORT || 8081;
 
-  const client = await auth.getClient();
+app.use(express.json());
 
-  const googleSheets = google.sheets({
-    version: 'v4',
-    auth: client,
-  });
-
-  const spreadsheetId = process.env.SHEET_ID;
-
-  return {
-    auth,
-    googleSheets,
-    spreadsheetId
-  };
-}
-
-async function run(block) {
+app.post("/", verifyToken, async (req, res) => {
+  const { block } = req.body;
+  
   const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
-
+  
   await googleSheets.spreadsheets.get({
     auth,
     spreadsheetId,
@@ -44,7 +30,15 @@ async function run(block) {
 
   const finalData = getFinalData(rawData, block);
 
-  console.log(finalData);
+  res.status(200).send({ message: "OK!", data: finalData });
+});
+
+function verifyToken(req, res, next) {
+  const { token } = req.body;
+  if(token !== process.env.SECRET) {
+    return res.status(401).send({ message: "Unauthorized!" });
+  }
+  return next();
 }
 
-run('BLOCO A ');
+app.listen(PORT, () => console.log(`Server open on port ${PORT}!`));
