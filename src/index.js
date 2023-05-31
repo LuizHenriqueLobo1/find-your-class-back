@@ -23,7 +23,7 @@ app.post("/", verifyToken, async (req, res) => {
   const content = await googleSheets.spreadsheets.values.get({
     auth,
     spreadsheetId,
-    range: block // Página da planilha desejada...
+    range: block
   });
 
   const rawData = content.data.values;
