@@ -1,5 +1,8 @@
-const { google } = require('googleapis');
-require('dotenv').config();
+import { google } from 'googleapis';
+import { config } from 'dotenv';
+import { getFinalData } from './service/service.js';
+
+config();
 
 async function getAuthSheets() {
   const auth = new google.auth.GoogleAuth({
@@ -23,10 +26,10 @@ async function getAuthSheets() {
   };
 }
 
-async function run() {
+async function run(block) {
   const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
 
-  const metadata = await googleSheets.spreadsheets.get({
+  await googleSheets.spreadsheets.get({
     auth,
     spreadsheetId,
   });
@@ -34,10 +37,14 @@ async function run() {
   const content = await googleSheets.spreadsheets.values.get({
     auth,
     spreadsheetId,
-    range: 'BLOCO A ' // Página da planilha desejada...
+    range: block // Página da planilha desejada...
   });
 
-  console.log(content.data.values)
+  const rawData = content.data.values;
+
+  const finalData = getFinalData(rawData, block);
+
+  console.log(finalData);
 }
 
-run()
+run('BLOCO A ');

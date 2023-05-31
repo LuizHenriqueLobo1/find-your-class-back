@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Back-end do projeto feito para ajudar os alunos do IFBA a achar suas salas.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon ./src/index.js"
   },
