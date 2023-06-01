@@ -18,6 +18,6 @@ export async function getAuthSheets() {
   return {
     auth,
     googleSheets,
-    spreadsheetId
+    spreadsheetId,
   };
 }

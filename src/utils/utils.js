@@ -1,16 +1,16 @@
 export const BLOCKS = [
   { id: 'BLOCO A ', horizontalTablesAmount: 2 },
-  { id: 'BLOCO B',  horizontalTablesAmount: 8 },
-  { id: 'BLOCO D',  horizontalTablesAmount: 8 },
-  { id: 'BLOCO E',  horizontalTablesAmount: 7 },
-  { id: 'BLOCO F',  horizontalTablesAmount: 5 },
-  { id: 'BLOCO G',  horizontalTablesAmount: 3 },
-  { id: 'BLOCO H',  horizontalTablesAmount: 8 },
-  { id: 'BLOCO I',  horizontalTablesAmount: 4 },
-  { id: 'BLOCO K',  horizontalTablesAmount: 4 },
-  { id: 'BLOCO L',  horizontalTablesAmount: 6 },
-  { id: 'BLOCO O',  horizontalTablesAmount: 14 },
-  { id: 'BLOCO P',  horizontalTablesAmount: 13 },
+  { id: 'BLOCO B', horizontalTablesAmount: 8 },
+  { id: 'BLOCO D', horizontalTablesAmount: 8 },
+  { id: 'BLOCO E', horizontalTablesAmount: 7 },
+  { id: 'BLOCO F', horizontalTablesAmount: 5 },
+  { id: 'BLOCO G', horizontalTablesAmount: 3 },
+  { id: 'BLOCO H', horizontalTablesAmount: 8 },
+  { id: 'BLOCO I', horizontalTablesAmount: 4 },
+  { id: 'BLOCO K', horizontalTablesAmount: 4 },
+  { id: 'BLOCO L', horizontalTablesAmount: 6 },
+  { id: 'BLOCO O', horizontalTablesAmount: 14 },
+  { id: 'BLOCO P', horizontalTablesAmount: 13 },
 ];
 
 export const POSSIBLE_START_VALUES_OF_LINE = [
@@ -30,5 +30,5 @@ export const POSSIBLE_START_VALUES_OF_LINE = [
   '18:40 - 19:30',
   '19:30 - 20:20',
   '20:20 - 21:10',
-  '21:10 - 22:00'
+  '21:10 - 22:00',
 ];
