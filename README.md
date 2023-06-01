@@ -45,3 +45,9 @@ Utilizando formatador de código automático [Prettier](https://prettier.io/) no
 ```
 
 4. Agora ao salvar o arquivo, o mesmo será formatado automaticamente.
+
+---
+
+<p align="center">
+  Made by <a href="https://github.com/luizhenriquelobo1/" target="_blank">Luiz Henrique Lobo</a>
+</p>
