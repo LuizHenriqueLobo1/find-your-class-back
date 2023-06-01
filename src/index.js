@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import express from 'express';
 import { getAuthSheets } from './api/api.js';
 import { getFinalData } from './service/service.js';
+import { BLOCKS } from './utils/utils.js';
 
 config();
 
@@ -18,8 +19,6 @@ app.get('/', async (_, res) => {
 
 app.get('/get-sheet-data', verifyToken, async (req, res) => {
   try {
-    const { block } = req.query;
-
     const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
 
     await googleSheets.spreadsheets.get({
@@ -27,16 +26,19 @@ app.get('/get-sheet-data', verifyToken, async (req, res) => {
       spreadsheetId,
     });
 
-    const content = await googleSheets.spreadsheets.values.get({
-      auth,
-      spreadsheetId,
-      range: block,
-    });
+    const finalDataArray = [];
+    for (const block of BLOCKS) {
+      const content = await googleSheets.spreadsheets.values.get({
+        auth,
+        spreadsheetId,
+        range: block.id,
+      });
+      const rawData = content.data.values;
+      const finalData = getFinalData(rawData, block.id);
+      finalDataArray.push(finalData);
+    }
 
-    const rawData = content.data.values;
-
-    const finalData = getFinalData(rawData, block);
-    res.status(200).send({ message: 'OK!', data: finalData });
+    res.status(200).send({ message: 'OK!', data: finalDataArray });
   } catch (error) {
     res.status(500).send({ message: 'We have a problem!', error });
   }

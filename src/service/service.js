@@ -50,12 +50,11 @@ export function getFinalData(data, block) {
     filteredRooms.push({
       roomName: room[0][1],
       classes: newRooms[index],
+      block,
     });
   });
 
-  const finalRooms = { bloco: block, ...filteredRooms };
-
-  return finalRooms;
+  return filteredRooms;
 }
 
 function generateCustomArrayOfSubarrays(array, amount) {
