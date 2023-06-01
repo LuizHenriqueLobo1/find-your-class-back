@@ -17,26 +17,29 @@ app.get('/', async (_, res) => {
 });
 
 app.get('/get-sheet-data', verifyToken, async (req, res) => {
-  const { block } = req.query;
+  try {
+    const { block } = req.query;
 
-  const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
+    const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
 
-  await googleSheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
-  });
+    await googleSheets.spreadsheets.get({
+      auth,
+      spreadsheetId,
+    });
 
-  const content = await googleSheets.spreadsheets.values.get({
-    auth,
-    spreadsheetId,
-    range: block,
-  });
+    const content = await googleSheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId,
+      range: block,
+    });
 
-  const rawData = content.data.values;
+    const rawData = content.data.values;
 
-  const finalData = getFinalData(rawData, block);
-
-  res.status(200).send({ message: 'OK!', data: finalData });
+    const finalData = getFinalData(rawData, block);
+    res.status(200).send({ message: 'OK!', data: finalData });
+  } catch (error) {
+    res.status(500).send({ message: 'We have a problem!', error });
+  }
 });
 
 function verifyToken(req, res, next) {
