@@ -10,8 +10,9 @@ const PORT = process.env.PORT || 8081;
 
 app.use(express.json());
 
-app.post("/", verifyToken, async (req, res) => {
-  const { block } = req.body;
+app.get("/get-sheet-data", verifyToken, async (req, res) => {
+
+  const { block } = req.query;
   
   const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
   
@@ -34,7 +35,8 @@ app.post("/", verifyToken, async (req, res) => {
 });
 
 function verifyToken(req, res, next) {
-  const { token } = req.body;
+  const { token } = req.headers;
+  console.log(token)
   if(token !== process.env.SECRET) {
     return res.status(401).send({ message: "Unauthorized!" });
   }
