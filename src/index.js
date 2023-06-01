@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 import express from 'express';
+import cors from 'cors';
 import { getFinalData } from './service/service.js';
 import { getAuthSheets } from './api/api.js';
 
@@ -9,6 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 8081;
 
 app.use(express.json());
+app.use(cors());
+
+app.get("/", async (req, res) => {
+  res.status(200).send({ message: "All right here!" });
+});
 
 app.get("/get-sheet-data", verifyToken, async (req, res) => {
 
@@ -36,7 +42,6 @@ app.get("/get-sheet-data", verifyToken, async (req, res) => {
 
 function verifyToken(req, res, next) {
   const { token } = req.headers;
-  console.log(token)
   if(token !== process.env.SECRET) {
     return res.status(401).send({ message: "Unauthorized!" });
   }

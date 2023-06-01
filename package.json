@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/LuizHenriqueLobo1/find-your-class-back#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.0.2",
     "googleapis": "^108.0.0",
     "nodemon": "^2.0.20"
