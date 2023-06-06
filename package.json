@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon ./src/index.js"
+    "start": "nodemon --openssl-legacy-provider ./src/index.js"
   },
   "repository": {
     "type": "git",
