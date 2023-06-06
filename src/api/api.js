@@ -2,7 +2,10 @@ import { google } from 'googleapis';
 
 export async function getAuthSheets() {
   const auth = new google.auth.GoogleAuth({
-    keyFile: './credentials.json',
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY,
+    },
     scopes: process.env.SCOPES,
   });
 
