@@ -10,7 +10,7 @@
 
 ### Como fazer funcionar?
 
-1. Clone do repositório `git clone https://githubcom/LuizHenriqueLobo1/find-your-class-back.git`
+1. Clone do repositório `git clone https://github.com/LuizHenriqueLobo1/find-your-class-back.git`
 2. Crie o **.env** a partir do **.env.example** utilizando:
    - Windows: `copy .env.example .env`
    - Linux: `cp .env.example .env`
