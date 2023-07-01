@@ -3,7 +3,6 @@ import { config } from 'dotenv';
 import express from 'express';
 import { getAuthSheets } from './api/api.js';
 import { getFinalData } from './service/service.js';
-import { BLOCKS } from './utils/utils.js';
 
 config();
 
@@ -26,15 +25,16 @@ app.get('/get-sheet-data', verifyToken, async (req, res) => {
       spreadsheetId,
     });
 
+    const blocks = process.env.BLOCKS.split(',');
+
     const finalDataArray = [];
-    for (const block of BLOCKS) {
+    for (const block of blocks) {
       const content = await googleSheets.spreadsheets.values.get({
         auth,
         spreadsheetId,
-        range: block.id,
+        range: block,
       });
-      const rawData = content.data.values;
-      const finalData = getFinalData(rawData, block.id);
+      const finalData = getFinalData(content.data.values, block);
       finalDataArray.push(finalData);
     }
 
