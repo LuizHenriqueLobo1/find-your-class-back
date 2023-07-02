@@ -71,7 +71,8 @@ function comparesCellWithPossibleExceptions(cell) {
     cell === 'HORÁRIO' ||
     cell === ' HORÁRIO' ||
     cell === '\nHORÁRIO' ||
-    cell === '12:40 / 13:20'
+    cell === '12:40 / 13:20' ||
+    cell === ' '
   ) {
     return '*';
   } else {
