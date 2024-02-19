@@ -97,17 +97,20 @@ export function getFormattedData(data) {
   return finalData;
 }
 
-function comparesCellWithPossibleExceptions(cell) {
-  if (
-    cell === '' ||
-    cell === undefined ||
-    cell === null ||
-    cell === 'HORÁRIO' ||
-    cell === ' HORÁRIO' ||
-    cell === '\nHORÁRIO' ||
-    cell === '12:40 / 13:20' ||
-    cell === ' '
-  ) {
+function comparesCellWithPossibleExceptions(cell, block) {
+  const arrayOfExceptions = [
+    '',
+    ' ',
+    '\n',
+    undefined,
+    null,
+    'HORÁRIO',
+    ' HORÁRIO',
+    '\nHORÁRIO',
+    '12:40 / 13:20',
+    '2822 - dificuldade de locomoção',
+  ];
+  if (String(cell).includes('OBS.:') || arrayOfExceptions.includes(cell)) {
     return '*';
   } else {
     return cell;
