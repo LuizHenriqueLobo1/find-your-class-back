@@ -2,7 +2,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
 import { getAuthSheets } from './api/api.js';
-import { getFinalData } from './service/service.js';
+import { getData, getFormattedData } from './service/service.js';
 
 config();
 
@@ -16,33 +16,66 @@ app.get('/', async (_, res) => {
   res.status(200).send({ message: 'All right here!' });
 });
 
-app.get('/get-sheet-data', verifyToken, async (req, res) => {
+app.get('/get-sheet-data', verifyToken, async (_, res) => {
   try {
-    const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
+    const data = await getFinalData().catch((_) => []);
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({ message: 'Internal server error!', error });
+  }
+});
 
-    await googleSheets.spreadsheets.get({
-      auth,
-      spreadsheetId,
-    });
+app.post('/get-sheet-data-to-calendar', verifyToken, async (req, res) => {
+  try {
+    const { disciplines } = req.body;
+    if (!disciplines || !disciplines.length) {
+      return res.status(400).send({ message: 'Invalid request body!' });
+    }
+    const data = await getFinalData().catch((_) => []);
+    const filteredData = [];
+    for (const discipline of disciplines) {
+      for (const element of data) {
+        if (element[element.day].includes(discipline)) {
+          filteredData.push(element);
+        }
+      }
+    }
+    res.status(200).send(filteredData);
+  } catch (error) {
+    res.status(500).send({ message: 'Internal server error!', error });
+  }
+});
 
-    const blocks = process.env.BLOCKS.split(',');
+async function getFinalData() {
+  const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
 
-    const finalDataArray = [];
-    for (const block of blocks) {
-      const content = await googleSheets.spreadsheets.values.get({
+  await googleSheets.spreadsheets.get({
+    auth,
+    spreadsheetId,
+  });
+
+  const blocks = process.env.BLOCKS.split(',');
+
+  const dataArray = [];
+  for (const block of blocks) {
+    const content = await googleSheets.spreadsheets.values
+      .get({
         auth,
         spreadsheetId,
         range: block,
+      })
+      .catch((error) => {
+        console.error({ message: 'Erro ao tentar obter os dados da planilha!', error });
+        return null;
       });
-      const finalData = getFinalData(content.data.values, block);
-      finalDataArray.push(finalData);
+    if (!content.data.values.length) {
+      return [];
     }
-
-    res.status(200).send({ message: 'OK!', data: finalDataArray });
-  } catch (error) {
-    res.status(500).send({ message: 'We have a problem!', error });
+    const data = getData(content.data.values, block);
+    dataArray.push(data);
   }
-});
+  return getFormattedData(dataArray.flatMap((element) => element));
+}
 
 function verifyToken(req, res, next) {
   const { token } = req.headers;

@@ -4,7 +4,7 @@
  * @param block Bloco
  * @return Dados formatados em um padrão mais coerentes para ser consumido
  */
-export function getFinalData(rawData, block) {
+export function getData(rawData, block) {
   const numberOfColumns = 7;
   const numberOfLines = rawData.length;
   const filteredArray = [];
@@ -61,6 +61,40 @@ export function getFinalData(rawData, block) {
   // makeBasicTestOnFinalArray(finalArray);
 
   return finalArray;
+}
+
+export function getFormattedData(data) {
+  const finalData = [];
+
+  data.forEach((item) => {
+    const roomName = item.roomName;
+    const block = item.block;
+
+    item.classes.forEach((classSchedule) => {
+      const time = classSchedule[0];
+      const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+      for (let i = 1; i < classSchedule.length; i++) {
+        const className = classSchedule[i];
+
+        if (className !== '*') {
+          const day = days[i - 1];
+          const key = `${time}-${day}-${className}`;
+
+          const newItem = {
+            key,
+            time,
+            day,
+            [day]: `${className} | ${block} - ${roomName}`,
+          };
+
+          finalData.push(newItem);
+        }
+      }
+    });
+  });
+
+  return finalData;
 }
 
 function comparesCellWithPossibleExceptions(cell) {
