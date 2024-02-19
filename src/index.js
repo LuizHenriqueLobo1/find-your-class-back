@@ -1,7 +1,9 @@
 import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
+import cron from 'node-cron';
 import { getAuthSheets } from './api/api.js';
+import { getDataOfDatabase, updateDataOnDatabase } from './db/db.js';
 import { getData, getFormattedData } from './service/service.js';
 
 config();
@@ -18,7 +20,7 @@ app.get('/', async (_, res) => {
 
 app.get('/get-sheet-data', verifyToken, async (_, res) => {
   try {
-    const data = await getFinalData().catch((_) => []);
+    const data = await getDataOfDatabase().catch((_) => []);
     res.status(200).send(data);
   } catch (error) {
     res.status(500).send({ message: 'Internal server error!', error });
@@ -31,7 +33,7 @@ app.post('/get-sheet-data-to-calendar', verifyToken, async (req, res) => {
     if (!disciplines || !disciplines.length) {
       return res.status(400).send({ message: 'Invalid request body!' });
     }
-    const data = await getFinalData().catch((_) => []);
+    const data = await getDataOfDatabase().catch((_) => []);
     const filteredData = [];
     for (const discipline of disciplines) {
       for (const element of data) {
@@ -84,5 +86,12 @@ function verifyToken(req, res, next) {
   }
   return next();
 }
+
+cron.schedule('* */2 * * *', async () => {
+  if (process.env.ENVIRONMENT !== 'dev') {
+    const data = await getFinalData().catch((_) => []);
+    await updateDataOnDatabase(data);
+  }
+});
 
 app.listen(PORT, () => console.log(`Server open on port ${PORT}!`));
