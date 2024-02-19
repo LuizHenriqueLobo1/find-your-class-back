@@ -31,46 +31,36 @@ export async function getDataOfDatabase() {
 }
 
 export async function updateDataOnDatabase(data) {
-  console.log(`🔔 - Atualizando dados...`);
   if (!data || !data.length) {
-    console.log(`⚠️ - Erro ao tentar obter os dados da planilha!`);
-    return;
+    return false;
   }
-  const deleteResponse = await deleteDataOfDatabase();
-  if (deleteResponse) {
-    const insertResponse = await insertDataOnDatabase(data);
-    if (insertResponse) {
-      console.log(`✅ - Sucesso ao inserir os novos dados no banco!`);
-    } else {
-      console.log(`❌ - Houve um problema ao tentar inserir os novos dados no banco!`);
+  try {
+    await client.connect();
+    const session = client.startSession();
+    try {
+      session.startTransaction();
+
+      const db = client.db(process.env.DB_NAME);
+      const collection = db.collection(process.env.COLLECTION_NAME);
+
+      await collection.deleteMany({}, { session });
+
+      await collection.insertMany(data, { session });
+
+      await session.commitTransaction();
+
+      console.log('✅ - Transação concluída com sucesso!');
+      return true;
+    } catch (error) {
+      await session.abortTransaction();
+      console.log('Erro na transação: ' + error);
+      return false;
+    } finally {
+      session.endSession();
     }
-  } else {
-    console.log(`⚠️ - Erro ao tentar excluir os dados antigos no banco!`);
-  }
-}
-
-async function insertDataOnDatabase(data) {
-  try {
-    await client.connect();
-    const db = client.db(process.env.DB_NAME);
-    const collection = db.collection(process.env.COLLECTION_NAME);
-    return await collection
-      .insertMany(data)
-      .then((_) => true)
-      .catch((_) => false);
-  } finally {
-  }
-}
-
-async function deleteDataOfDatabase() {
-  try {
-    await client.connect();
-    const db = client.db(process.env.DB_NAME);
-    const collection = db.collection(process.env.COLLECTION_NAME);
-    return await collection
-      .deleteMany()
-      .then((_) => true)
-      .catch((_) => false);
+  } catch (error) {
+    console.log('Erro na conexão: ' + error);
+    return false;
   } finally {
     await client.close();
   }

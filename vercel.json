@@ -11,5 +11,9 @@
       "src": "(.*)",
       "dest": "src/index.js"
     }
-  ]
+  ],
+  "crons": [{
+    "path": "/update-database",
+    "schedule": "0 21 * * *"
+  }]
 }

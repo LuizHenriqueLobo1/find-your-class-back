@@ -48,6 +48,19 @@ app.post('/get-sheet-data-to-calendar', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/update-database', async (req, res) => {
+  if (req.headers['Authorization'] !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).send('Unauthorized!');
+  }
+  try {
+    const data = await getFinalData().catch((_) => []);
+    const response = await updateDataOnDatabase(data);
+    res.status(response ? 200 : 400).send(response);
+  } catch (error) {
+    res.status(500).send({ message: 'Internal server error!', error });
+  }
+});
+
 async function getFinalData() {
   const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
 
@@ -86,12 +99,5 @@ function verifyToken(req, res, next) {
   }
   return next();
 }
-
-// cron.schedule('* */2 * * *', async () => {
-//   if (process.env.ENVIRONMENT !== 'dev') {
-//     const data = await getFinalData().catch((_) => []);
-//     await updateDataOnDatabase(data);
-//   }
-// });
 
 app.listen(PORT, () => console.log(`Server open on port ${PORT}!`));
