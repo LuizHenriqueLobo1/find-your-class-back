@@ -87,11 +87,11 @@ function verifyToken(req, res, next) {
   return next();
 }
 
-cron.schedule('* */2 * * *', async () => {
-  if (process.env.ENVIRONMENT !== 'dev') {
-    const data = await getFinalData().catch((_) => []);
-    await updateDataOnDatabase(data);
-  }
-});
+// cron.schedule('* */2 * * *', async () => {
+//   if (process.env.ENVIRONMENT !== 'dev') {
+//     const data = await getFinalData().catch((_) => []);
+//     await updateDataOnDatabase(data);
+//   }
+// });
 
 app.listen(PORT, () => console.log(`Server open on port ${PORT}!`));
