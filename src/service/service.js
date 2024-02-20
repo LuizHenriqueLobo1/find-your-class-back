@@ -30,6 +30,11 @@ export function getData(rawData, block) {
     filteredArray.push(tempFilteredArray);
   }
 
+  // Ajusta um problema de formatação específico da planilha do bloco B
+  if (block === 'BLOCO B') {
+    filteredArray.splice(167, 1);
+  }
+
   // Cria um array contendo apenas as aulas
   const lessons = [];
   for (let i = 0; i < filteredArray.length; i++) {

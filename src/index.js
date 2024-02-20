@@ -49,7 +49,7 @@ app.post('/get-sheet-data-to-calendar', verifyToken, async (req, res) => {
 
 app.get('/update-database', async (req, res) => {
   if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
-    return res.status(401).send('Unauthorized!');
+    return res.status(401).send({ message: 'Unauthorized!' });
   }
   try {
     const data = await getFinalData().catch((_) => []);
