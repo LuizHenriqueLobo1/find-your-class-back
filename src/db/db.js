@@ -42,10 +42,21 @@ export async function updateDataOnDatabase(data) {
 
       const db = client.db(process.env.DB_NAME);
       const collection = db.collection(process.env.COLLECTION_NAME);
+      const logsCollection = db.collection('logs');
 
-      await collection.deleteMany({}, { session });
+      const deleteResponse = await collection.deleteMany({}, { session });
 
-      await collection.insertMany(data, { session });
+      const insertResponse = await collection.insertMany(data, { session });
+
+      await logsCollection.insertOne(
+        {
+          dateTime: new Date(),
+          deletedCount: deleteResponse.deletedCount,
+          insertedCount: insertResponse.insertedCount,
+          environment: process.env.ENVIRONMENT,
+        },
+        { session }
+      );
 
       await session.commitTransaction();
 
