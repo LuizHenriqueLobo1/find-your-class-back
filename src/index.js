@@ -1,7 +1,6 @@
 import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
-import cron from 'node-cron';
 import { getAuthSheets } from './api/api.js';
 import { getDataOfDatabase, updateDataOnDatabase } from './db/db.js';
 import { getData, getFormattedData } from './service/service.js';
