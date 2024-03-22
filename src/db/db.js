@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { config } from 'dotenv';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 
@@ -72,6 +73,33 @@ export async function updateDataOnDatabase(data) {
   } catch (error) {
     console.log('Erro na conexão: ' + error);
     return false;
+  } finally {
+    await client.close();
+  }
+}
+
+export default async function getLogs() {
+  try {
+    await client.connect();
+    const db = client.db(process.env.DB_NAME);
+    const collection = db.collection('logs');
+    const data = await collection
+      .find({})
+      .sort({ dateTime: -1 })
+      .toArray()
+      .catch((_) => []);
+    if (!data.length) {
+      return [];
+    }
+    return data.map((element) => {
+      return {
+        ...element,
+        dateTime: dayjs(element.dateTime).format('DD/MM/YYYY [às] HH:mm'),
+      };
+    });
+  } catch (error) {
+    console.log('Erro na conexão: ' + error);
+    return [];
   } finally {
     await client.close();
   }

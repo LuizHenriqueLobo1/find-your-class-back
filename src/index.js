@@ -2,7 +2,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
 import { getAuthSheets } from './api/api.js';
-import { getDataOfDatabase, updateDataOnDatabase } from './db/db.js';
+import getLogs, { getDataOfDatabase, updateDataOnDatabase } from './db/db.js';
 import { getData, getFormattedData } from './service/service.js';
 
 config();
@@ -55,6 +55,15 @@ app.get('/update-database', async (req, res) => {
     const data = await getFinalData().catch((_) => []);
     const response = await updateDataOnDatabase(data);
     res.status(response ? 200 : 400).send(response);
+  } catch (error) {
+    res.status(500).send({ message: 'Internal server error!', error });
+  }
+});
+
+app.get('/get-logs', verifyToken, async (req, res) => {
+  try {
+    const data = await getLogs().catch((_) => []);
+    return res.status(200).send(data);
   } catch (error) {
     res.status(500).send({ message: 'Internal server error!', error });
   }
