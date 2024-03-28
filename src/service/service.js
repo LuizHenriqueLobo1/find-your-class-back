@@ -1,3 +1,5 @@
+import { v4 } from 'uuid';
+
 /**
  * Processa os dados trazidos da planilha
  * @param rawData Dados brutos puxados da planilha
@@ -84,15 +86,12 @@ export function getFormattedData(data) {
 
         if (className !== '*') {
           const day = days[i - 1];
-          const key = `${time}-${day}-${className}`;
-
           const newItem = {
-            key,
+            key: v4(),
             time,
             day,
-            [day]: `${className} | ${block} - ${roomName}`,
+            [day]: `${className} | ${block} | ${roomName}`,
           };
-
           finalData.push(newItem);
         }
       }
