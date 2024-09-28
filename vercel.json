@@ -19,7 +19,7 @@
     }
   ],
   "functions": {
-    "src/index.js": {
+    "api/*.js": {
       "maxDuration": 60
     }
   }
