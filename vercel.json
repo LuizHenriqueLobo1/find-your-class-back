@@ -12,8 +12,15 @@
       "dest": "src/index.js"
     }
   ],
-  "crons": [{
-    "path": "/update-database",
-    "schedule": "0 7 * * *"
-  }]
+  "crons": [
+    {
+      "path": "/update-database",
+      "schedule": "0 7 * * *"
+    }
+  ],
+  "functions": {
+    "src/index.js": {
+      "maxDuration": 60
+    }
+  }
 }
