@@ -17,31 +17,11 @@ app.get('/', async (_, res) => {
   res.status(200).send({ message: 'All right here!' });
 });
 
-app.get('/get-sheet-data', verifyToken, async (_, res) => {
+app.get('/get-sheet-data', verifyToken, async (req, res) => {
   try {
-    const data = await getDataOfDatabase().catch((_) => []);
+    const { page, pageSize } = req.query;
+    const data = await getDataOfDatabase(page, pageSize).catch((_) => []);
     res.status(200).send(data);
-  } catch (error) {
-    res.status(500).send({ message: 'Internal server error!', error });
-  }
-});
-
-app.post('/get-sheet-data-to-calendar', verifyToken, async (req, res) => {
-  try {
-    const { disciplines } = req.body;
-    if (!disciplines || !disciplines.length) {
-      return res.status(400).send({ message: 'Invalid request body!' });
-    }
-    const data = await getDataOfDatabase().catch((_) => []);
-    const filteredData = [];
-    for (const discipline of disciplines) {
-      for (const element of data) {
-        if (element[element.day].includes(discipline)) {
-          filteredData.push(element);
-        }
-      }
-    }
-    res.status(200).send(filteredData);
   } catch (error) {
     res.status(500).send({ message: 'Internal server error!', error });
   }

@@ -12,23 +12,22 @@ const client = new MongoClient(process.env.DB_URI, {
   },
 });
 
-export async function getDataOfDatabase() {
-  try {
-    await client.connect();
-    const db = client.db(process.env.DB_NAME);
-    const collection = db.collection(process.env.COLLECTION_NAME);
-    const data = await collection
-      .find({})
-      .toArray()
-      .catch((_) => []);
-    const finalData = data.map((element) => {
-      delete element._id;
-      return element;
-    });
-    return finalData;
-  } finally {
-    await client.close();
-  }
+export async function getDataOfDatabase(page, pageSize) {
+  await client.connect();
+  const db = client.db(process.env.DB_NAME);
+  const collection = db.collection(process.env.COLLECTION_NAME);
+  const integerPage = parseInt(page);
+  const integerPageSize = parseInt(pageSize);
+  const skip = (integerPage - 1) * integerPageSize;
+  const data = await collection
+    .find({})
+    .project({ _id: 0 })
+    .skip(skip)
+    .limit(integerPageSize)
+    .toArray()
+    .catch((_) => []);
+  if (!data.length) await client.close();
+  return data;
 }
 
 export async function updateDataOnDatabase(data) {
