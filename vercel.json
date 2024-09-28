@@ -17,10 +17,5 @@
       "path": "/update-database",
       "schedule": "0 7 * * *"
     }
-  ],
-  "functions": {
-    "api/*.js": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }
