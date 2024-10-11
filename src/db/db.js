@@ -77,7 +77,7 @@ export async function updateDataOnDatabase(data) {
   }
 }
 
-export default async function getLogs() {
+export async function getLogs() {
   try {
     await client.connect();
     const db = client.db(process.env.DB_NAME);
@@ -99,6 +99,29 @@ export default async function getLogs() {
   } catch (error) {
     console.log('Erro na conexão: ' + error);
     return [];
+  } finally {
+    await client.close();
+  }
+}
+
+export async function getLastLog() {
+  try {
+    await client.connect();
+    const db = client.db(process.env.DB_NAME);
+    const collection = db.collection('logs');
+    const data = await collection
+      .find({})
+      .sort({ dateTime: -1 })
+      .limit(1)
+      .toArray()
+      .catch((_) => []);
+    if (!data.length) {
+      return null;
+    }
+    return data[0];
+  } catch (error) {
+    console.log('Erro na conexão: ' + error);
+    return null;
   } finally {
     await client.close();
   }
