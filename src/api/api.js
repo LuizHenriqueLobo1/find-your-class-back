@@ -6,7 +6,7 @@ export async function getAuthSheets() {
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
       private_key: process.env.GOOGLE_PRIVATE_KEY,
     },
-    scopes: process.env.SCOPES,
+    scopes: process.env.SCOPES.split(','),
   });
 
   const client = await auth.getClient();
@@ -16,11 +16,11 @@ export async function getAuthSheets() {
     auth: client,
   });
 
-  const spreadsheetId = process.env.SHEET_ID;
+  const drive = google.drive({ version: 'v2', auth });
 
   return {
     auth,
     googleSheets,
-    spreadsheetId,
+    drive,
   };
 }

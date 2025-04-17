@@ -1,6 +1,8 @@
 import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
+import fs from 'fs';
+import { v4 } from 'uuid';
 import { getAuthSheets } from './api/api.js';
 import { getDataOfDatabase, getLastLog, getLogs, updateDataOnDatabase } from './db/db.js';
 import { getData, getFormattedData } from './service/service.js';
@@ -32,9 +34,9 @@ app.get('/update-database', async (req, res) => {
     return res.status(401).send({ message: 'Unauthorized!' });
   }
   try {
-    const data = await getFinalData().catch((_) => []);
+    const data = await getFinalData();
     const response = await updateDataOnDatabase(data);
-    res.status(response ? 200 : 400).send(response);
+    res.status(response ? 200 : 400).send({ success: response });
   } catch (error) {
     res.status(500).send({ message: 'Internal server error!', error });
   }
@@ -59,21 +61,55 @@ app.get('/get-last-log', verifyToken, async (req, res) => {
 });
 
 async function getFinalData() {
-  const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
+  const baseSheetId = process.env.SHEET_ID;
 
-  await googleSheets.spreadsheets.get({
-    auth,
-    spreadsheetId,
+  const { auth, drive, googleSheets } = await getAuthSheets();
+
+  const dest = fs.createWriteStream('./temp.xlsx');
+
+  // Baixa o arquivo .xlsx
+  await drive.files.get({ fileId: baseSheetId, alt: 'media' }, { responseType: 'stream' }).then(
+    (res) =>
+      new Promise((resolve, reject) => {
+        res.data
+          .on('end', () => resolve())
+          .on('error', (err) => reject(err))
+          .pipe(dest);
+      })
+  );
+
+  // Cria a planilha no formato correto
+  const response = await drive.files.insert({
+    requestBody: {
+      title: v4(),
+      mimeType: 'application/vnd.google-apps.spreadsheet',
+    },
+    media: {
+      mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      body: fs.createReadStream('./temp.xlsx'),
+    },
+    fields: 'id, webViewLink',
   });
+  if (response.status !== 200 || !response.data || !response.data.id) return;
 
-  const blocks = process.env.BLOCKS.split(',');
+  const fileId = response.data.id;
+
+  fs.unlinkSync('./temp.xlsx');
+
+  const spreadsheet = await googleSheets.spreadsheets.get({
+    auth,
+    spreadsheetId: fileId,
+  });
+  if (spreadsheet.status !== 200) return;
+
+  const pages = spreadsheet.data.sheets.map(({ properties }) => properties.title);
 
   const dataArray = [];
-  for (const block of blocks) {
+  for (const block of pages) {
     const content = await googleSheets.spreadsheets.values
       .get({
         auth,
-        spreadsheetId,
+        spreadsheetId: fileId,
         range: block,
       })
       .catch((error) => {
@@ -86,6 +122,9 @@ async function getFinalData() {
     const data = getData(content.data.values, block);
     dataArray.push(data);
   }
+
+  await drive.files.delete({ fileId });
+
   return getFormattedData(dataArray.flatMap((element) => element));
 }
 
