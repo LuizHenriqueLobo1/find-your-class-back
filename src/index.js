@@ -65,7 +65,11 @@ async function getFinalData() {
 
   const { auth, drive, googleSheets } = await getAuthSheets();
 
-  const dest = fs.createWriteStream('./temp.xlsx');
+  const tmpDirPath = './tmp';
+  const filePath = `${tmpDirPath}/temp.xlsx`;
+
+  fs.mkdirSync(tmpDirPath, { recursive: true });
+  const dest = fs.createWriteStream(filePath);
 
   // Baixa o arquivo .xlsx
   await drive.files.get({ fileId: baseSheetId, alt: 'media' }, { responseType: 'stream' }).then(
@@ -86,7 +90,7 @@ async function getFinalData() {
     },
     media: {
       mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      body: fs.createReadStream('./temp.xlsx'),
+      body: fs.createReadStream(filePath),
     },
     fields: 'id, webViewLink',
   });
@@ -94,7 +98,7 @@ async function getFinalData() {
 
   const fileId = response.data.id;
 
-  fs.unlinkSync('./temp.xlsx');
+  fs.unlinkSync(filePath);
 
   const spreadsheet = await googleSheets.spreadsheets.get({
     auth,
