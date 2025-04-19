@@ -2,6 +2,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import express from 'express';
 import fs from 'fs';
+import path from 'path';
 import { v4 } from 'uuid';
 import { getAuthSheets } from './api/api.js';
 import { getDataOfDatabase, getLastLog, getLogs, updateDataOnDatabase } from './db/db.js';
@@ -65,7 +66,8 @@ async function getFinalData() {
 
   const { auth, drive, googleSheets } = await getAuthSheets();
 
-  const filePath = `./tmp/temp.xlsx`;
+  const filePath = path.join('/tmp', 'temp.xlsx');
+
   const dest = fs.createWriteStream(filePath);
 
   // Baixa o arquivo .xlsx
