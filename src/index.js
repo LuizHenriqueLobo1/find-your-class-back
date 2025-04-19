@@ -65,10 +65,7 @@ async function getFinalData() {
 
   const { auth, drive, googleSheets } = await getAuthSheets();
 
-  const tmpDirPath = './tmp';
-  const filePath = `${tmpDirPath}/temp.xlsx`;
-
-  fs.mkdirSync(tmpDirPath, { recursive: true });
+  const filePath = `./tmp/temp.xlsx`;
   const dest = fs.createWriteStream(filePath);
 
   // Baixa o arquivo .xlsx
